@@ -22,8 +22,8 @@ stuff  = {'wall'  :  "#",
           'empty' :  ".",
           'money' :  "$",
           'chest' :  "C"}
-potion = ['hp','xp','dmg']
-weapon = ['sword','nuclear bomb','TNT']
+#potion = ['hp','xp','dmg']
+#weapon = ['sword','nuclear bomb','TNT']
 
 def chest_choice():
 	
