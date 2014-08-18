@@ -1,19 +1,36 @@
 #@author : Rafsan Ratul (ratulrafsan@gmail.com)
 #An attempt to make a simple rouguelike game in python without using any external library
-
-import msvcrt
 import os
 import random
+import platform
+try:
+    from msvcrt import getch #For windows
+except ImportError: #For linux and maybe mac...
+    def getch():
+    
+        import sys, tty, termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+def pressedkey():
+    return getch()
+
           # 0   1   2   3   4   5   6   7   8   9  10   11  12  13  14  15
 room = {1:['#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#'], # ^
 	    2:['#','.','.','.','.','.','.','.','.','.','.','.','.','.','.','#'], # |
-	    3:['#','$','.','.','.','.','.','.','.','#','#','#','#','.','.','#'], # |
+	    3:['#','.','.','.','.','.','.','.','.','#','#','#','#','.','.','#'], # |
 	    4:['#','.','.','.','.','.','.','#','.','#','.','.','.','.','.','#'], # |
-	    5:['#','.','.','.','.','.','@','#','.','#','.','C','#','.','.','#'], # |
+	    5:['#','.','.','.','.','.','@','#','.','#','.','.','#','.','.','#'], # |
 	    6:['#','.','.','.','.','.','.','#','.','.','.','.','#','.','.','#'], # x
 	    7:['#','.','.','.','.','#','#','#','.','#','#','.','#','.','.','#'], # |
 	    8:['#','.','.','.','.','.','.','.','.','.','#','#','#','.','.','#'], # |
-	    9:['#','.','.','.','$','.','.','.','.','.','.','.','.','.','.','#'], # |
+	    9:['#','.','.','.','.','.','.','.','.','.','.','.','.','.','.','#'], # |
 	   10:['#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#']} # |
 	    # <------------------------------y--------------------------------->
 
@@ -22,10 +39,9 @@ stuff  = {'wall'  :  "#",
           'empty' :  ".",
           'money' :  "$",
           'chest' :  "C"}
-potion = ['hp','xp','dmg']
-weapon = ['sword','nuclear bomb','TNT']
+#potion = ['hp','xp','dmg']
+#weapon = ['sword','nuclear bomb','TNT']
 
-def chest_choice():
 	
 
 pos = [] # 0 is X,1 is Y
@@ -46,68 +62,71 @@ def player_pos():
 			pos.append(y_axis)
 
 def updater():
-	os.system('cls')
+	if platform.system() =='Windows':
+		os.system('cls')
+	elif platform.system() == 'Linux':
+		os.system('clear') #For linux.. I don't know what to do about mac :/
 	gamemap()
 	player_pos()
 
 
-def up(ditcioary,cord_holder,x_cord,y_cord,inst_replace,inst_player):
-	(ditcioary[cord_holder[x_cord]]).pop(cord_holder[y_cord])
-	(ditcioary[cord_holder[x_cord]]).insert(cord_holder[y_cord],inst_replace)
-	(ditcioary[cord_holder[x_cord]-1]).pop(cord_holder[y_cord])
-	(ditcioary[cord_holder[x_cord]-1]).insert(cord_holder[y_cord],inst_player)
+def up(ditcioary,inst_replace,inst_player):
+	(ditcioary[pos[0]]).pop(pos[1])
+	(ditcioary[pos[0]]).insert(pos[1],inst_replace)
+	(ditcioary[pos[0]-1]).pop(pos[1])
+	(ditcioary[pos[0]-1]).insert(pos[1],inst_player)
 
 
-def down(ditcioary,cord_holder,x_cord,y_cord,inst_replace,inst_player):
-	(ditcioary[cord_holder[x_cord]]).pop(cord_holder[y_cord])
-	(ditcioary[cord_holder[x_cord]]).insert(cord_holder[y_cord],inst_replace)
-	(ditcioary[cord_holder[x_cord]+1]).pop(cord_holder[y_cord])
-	(ditcioary[cord_holder[x_cord]+1]).insert(cord_holder[y_cord],inst_player)
+def down(ditcioary,inst_replace,inst_player):
+	(ditcioary[pos[0]]).pop(pos[1])
+	(ditcioary[pos[0]]).insert(pos[1],inst_replace)
+	(ditcioary[pos[0]+1]).pop(pos[1])
+	(ditcioary[pos[0]+1]).insert(pos[1],inst_player)
 
 
-def left(ditcioary,cord_holder,x_cord,y_cord,inst_replace,inst_player):
-	(ditcioary[cord_holder[x_cord]]).pop(cord_holder[y_cord])
-	(ditcioary[cord_holder[x_cord]]).insert(cord_holder[y_cord],inst_replace)
-	(ditcioary[cord_holder[x_cord]]).pop(cord_holder[y_cord]-1)
-	(ditcioary[cord_holder[x_cord]]).insert(cord_holder[y_cord]-1,inst_player)
+def left(ditcioary,inst_replace,inst_player):
+	(ditcioary[pos[0]]).pop(pos[1])
+	(ditcioary[pos[0]]).insert(pos[1],inst_replace)
+	(ditcioary[pos[0]]).pop(pos[1]-1)
+	(ditcioary[pos[0]]).insert(pos[1]-1,inst_player)
 
 
-def right(ditcioary,cord_holder,x_cord,y_cord,inst_replace,inst_player):
-	(ditcioary[cord_holder[x_cord]]).pop(cord_holder[y_cord])
-	(ditcioary[cord_holder[x_cord]]).insert(cord_holder[y_cord],inst_replace)
-	(ditcioary[cord_holder[x_cord]]).pop(cord_holder[y_cord]+1)
-	(ditcioary[cord_holder[x_cord]]).insert(cord_holder[y_cord]+1,inst_player)
+def right(ditcioary,inst_replace,inst_player):
+	(ditcioary[pos[0]]).pop(pos[1])
+	(ditcioary[pos[0]]).insert(pos[1],inst_replace)
+	(ditcioary[pos[0]]).pop(pos[1]+1)
+	(ditcioary[pos[0]]).insert(pos[1]+1,inst_player)
 
 
 
 updater()
 
 while True:
-	pressedkey = msvcrt.getch()
+	pressedkey = getch()
 	if pressedkey is 'w' or pressedkey is 'W':
 		if room[pos[0]-1][pos[1]] is not stuff['wall']:
-			up(room, pos, 0, 1, stuff['empty'], stuff['player'])
+			up(room, stuff['empty'], stuff['player'])
 			updater()
 			print pos
 		else:
 			print "Bump! Wall : up"
 	elif pressedkey is 's' or pressedkey is 'S':
 		if room[pos[0]+1][pos[1]] is not stuff['wall']:
-			down(room, pos,0,1,stuff['empty'],stuff['player'])
+			down(room,stuff['empty'],stuff['player'])
 			updater()
 			print pos
 		else:
 			print "Bump! wall : down"
 	elif pressedkey is 'a' or pressedkey is 'A':
 		if room[pos[0]][pos[1]-1] is not stuff['wall']:
-			left(room, pos, 0, 1, stuff['empty'], stuff['player'])
+			left(room,stuff['empty'], stuff['player'])
 			updater()
 			print pos
 		else:
 			print "Bump! wall : left"
 	elif pressedkey is 'd' or pressedkey is 'D':
 		if room[pos[0]][pos[1]+1] is not stuff['wall']:
-			right(room, pos, 0, 1, stuff['empty'], stuff['player'])
+			right(room,stuff['empty'], stuff['player'])
 			updater()
 			print pos
 		else:
