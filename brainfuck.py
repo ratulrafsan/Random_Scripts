@@ -46,9 +46,9 @@ def interpreter(code):
             pointer = braketmap[pointer] #Skip to starting braket
             continue
         elif c == "+": #increment cell value.
-            band[band_pointer] = (band[band_pointer]+1) % 2**8
+            band[band_pointer] = (band[band_pointer]+1)
         elif c == "-": #decrement cell value
-            band[band_pointer] = (band[band_pointer]-1) % 2**8
+            band[band_pointer] = (band[band_pointer]-1)
 
         pointer += 1
 
